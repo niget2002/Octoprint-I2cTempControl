@@ -1,0 +1,4 @@
+include README.md
+recursive-include octoprint_i2ctempcontrol/templates *
+recursive-include octoprint_i2ctempcontrol/translations *
+recursive-include octoprint_i2ctempcontrol/static *
