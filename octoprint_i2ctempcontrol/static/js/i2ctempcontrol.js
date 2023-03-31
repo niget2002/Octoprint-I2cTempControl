@@ -15,6 +15,17 @@ $(function() {
         // TODO: Implement your plugin's view model here.
 
         self.settings = parameters[0];
+        self.temperatureValue = ko.observable(0);
+        self.fanState = ko.observable("Off");
+        self.heaterState = ko.observable("Off");
+
+        self.onDataUpdaterPluginMessage = function (plugin, data) {
+            if (data.temperatureValue) { self.temperatureValue(data.temperatureValue); }        
+            if (data.fanState) { self.fanState("On") }
+            if (data.fanState < 0) {self.fanState("Off") }        
+            if (data.heaterState) { self.heaterState("On") }
+            if (data.heaterState < 0) { self.heaterState("Off") }     
+        }
 
         self.startLoop = function() {
             OctoPrint.simpleApiCommand('i2ctempcontrol', 'start_timer');

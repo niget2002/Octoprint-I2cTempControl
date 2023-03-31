@@ -21,7 +21,9 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 ):
 
     def __init__(self):
-        self.currentTemperature=10
+        self.currentTemperature=0
+        self.fanState=0
+        self.heaterState=0
         self.runTimer = None
 
     ##~~ SettingsPlugin mixin
@@ -31,6 +33,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             hardwareAddress="0x00",
             heaterGPIOPin="00",
             fanGPIOPin="01",
+            temperatureMin=10,
+            temperatureMax=20
             )
 
     ##~~ AssetPlugin mixin
@@ -53,14 +57,15 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             hardwareAddress=self._settings.get(["hardwareAddress"]),
             heaterGPIOPin=self._settings.get(["heaterGPIOPin"]),
             fanGPIOPin=self._settings.get(["fanGPIOPin"]),
-            currentTemperature=self.currentTemperature
+            temperatureMin=self._settings.get(["temperatureMin"]),
+            temperatureMax=self._settings.get(["temperatureMax"])
             )
 
     def get_template_configs(self):
         return [
             dict(type="settings", custom_bindings=False)
         ]
-
+    
     def get_api_commands(self):
         return dict(
             start_timer=[],
@@ -72,7 +77,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         if command == "start_timer":
             if self.runTimer == None:
                 self._logger.info("I2c starting timer")
-                self.runTimer = octoprint.util.RepeatedTimer(1.0, self.get_temperature)
+                self.runTimer = octoprint.util.RepeatedTimer(5.0, self.get_temperature)
                 self.runTimer.start()
 
         elif command == "stop_timer":
@@ -80,12 +85,32 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                 self._logger.info("I2c stopping timer")
                 self.runTimer.cancel()
                 self.runTimer = None
+                self.fanState = -1
+                self.heaterState = -1
+                self.update_data()
  
     def get_temperature(self):
         self.currentTemperature = self.currentTemperature+1
-        self._logger.info("I2c Temperature: %s" % self.currentTemperature)
+        if self.currentTemperature < self._settings.get(["temperatureMin"]):
+            self.fanState = -1
+            self.heaterState = 1
+        elif self.currentTemperature > self._settings.get(["temperatureMax"]):
+            self.fanState = 1
+            self.heaterState = -1
+        elif self._settings.get(["temperatureMin"]) < self.currentTemperature < self._settings.get(["temperatureMax"]):
+            self.fanstate = -1
+            self.heaterState = -1
+        self.update_data()
+        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
 
+    def update_data(self):
+        msg = dict( 
+            temperatureValue = self.currentTemperature,
+            fanState = self.fanState,
+            heaterState = self.heaterState
+            )
+        self._plugin_manager.send_plugin_message(self._identifier, msg)
 
     ##~~ Softwareupdate hook
 
