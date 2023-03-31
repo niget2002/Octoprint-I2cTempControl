@@ -13,6 +13,17 @@ $(function() {
         // self.settingsViewModel = parameters[1];
 
         // TODO: Implement your plugin's view model here.
+
+        self.settings = parameters[0];
+
+        self.startLoop = function() {
+            OctoPrint.simpleApiCommand('i2ctempcontrol', 'start_timer');
+        }
+
+        self.stopLoop = function() {
+            OctoPrint.simpleApiCommand('i2ctempcontrol', 'stop_timer');       
+        }
+
     }
 
     /* view model class, parameters for constructor, container to bind to
@@ -22,8 +33,8 @@ $(function() {
     OCTOPRINT_VIEWMODELS.push({
         construct: I2ctempcontrolViewModel,
         // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
-        dependencies: [ /* "loginStateViewModel", "settingsViewModel" */ ],
+        dependencies: [ "settingsViewModel" /* "loginStateViewModel", "settingsViewModel" */ ],
         // Elements to bind to, e.g. #settings_plugin_i2ctempcontrol, #tab_plugin_i2ctempcontrol, ...
-        elements: [ /* ... */ ]
+        elements: ["#tab_plugin_i2ctempcontrol" /* ... */ ]
     });
 });

@@ -1,0 +1,3 @@
+[octoprint.plugin]
+i2ctempcontrol = octoprint_i2ctempcontrol
+

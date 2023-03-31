@@ -1,0 +1,17 @@
+MANIFEST.in
+README.md
+setup.cfg
+setup.py
+OctoPrint_I2ctempcontrol.egg-info/PKG-INFO
+OctoPrint_I2ctempcontrol.egg-info/SOURCES.txt
+OctoPrint_I2ctempcontrol.egg-info/dependency_links.txt
+OctoPrint_I2ctempcontrol.egg-info/entry_points.txt
+OctoPrint_I2ctempcontrol.egg-info/not-zip-safe
+OctoPrint_I2ctempcontrol.egg-info/requires.txt
+OctoPrint_I2ctempcontrol.egg-info/top_level.txt
+octoprint_i2ctempcontrol/__init__.py
+octoprint_i2ctempcontrol/static/css/i2ctempcontrol.css
+octoprint_i2ctempcontrol/static/js/i2ctempcontrol.js
+octoprint_i2ctempcontrol/static/less/i2ctempcontrol.less
+octoprint_i2ctempcontrol/templates/I2ctempcontrol_tab.jinja2
+octoprint_i2ctempcontrol/templates/README.txt

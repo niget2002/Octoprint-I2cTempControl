@@ -1,0 +1,10 @@
+<div>
+    Current I2C Hardware address: {{ plugin_i2ctempcontrol_hardwareAddress|escape }}</p>
+    Current Heater GPIO Pin: {{ plugin_i2ctempcontrol_heaterGPIOPin|escape }}</p>
+    Current Fan GPIO Pin: {{ plugin_i2ctempcontrol_fanGPIOPin|escape }}</p>
+    Current Chamber Temperature: {{ plugin_i2ctempcontrol_currentTemperature|escape }}</p>
+    <button class="btn btn-primary" data-bind="click: startLoop">{{ _('Start') }}</button>
+    <button class="btn btn-primary" data-bind="click: stopLoop">{{ _('Stop') }}</button>
+</div>
+
+

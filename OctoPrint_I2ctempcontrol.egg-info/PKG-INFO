@@ -1,0 +1,11 @@
+Metadata-Version: 1.2
+Name: OctoPrint-I2ctempcontrol
+Version: 0.1.0
+Summary: TODO
+Home-page: https://github.com/niget2002/OctoPrint-I2ctempcontrol
+Author: David Walling
+Author-email: david@wallings.net
+License: AGPLv3
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires-Python: >=3,<4

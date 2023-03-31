@@ -10,18 +10,28 @@ from __future__ import absolute_import
 # Take a look at the documentation on what other plugin mixins are available.
 
 import octoprint.plugin
+import octoprint.util
 
 class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     octoprint.plugin.AssetPlugin,
-    octoprint.plugin.TemplatePlugin
+    octoprint.plugin.ProgressPlugin,
+    octoprint.plugin.TemplatePlugin,
+    octoprint.plugin.StartupPlugin,
+    octoprint.plugin.SimpleApiPlugin
 ):
+
+    def __init__(self):
+        self.currentTemperature=10
+        self.runTimer = None
 
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
-        return {
-            # put your plugin's default settings here
-        }
+        return dict(
+            hardwareAddress="0x00",
+            heaterGPIOPin="00",
+            fanGPIOPin="01",
+            )
 
     ##~~ AssetPlugin mixin
 
@@ -33,6 +43,49 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             "css": ["css/i2ctempcontrol.css"],
             "less": ["less/i2ctempcontrol.less"]
         }
+
+    ##~~ Startup Plugin
+    def on_after_startup(self):
+        self._logger.info("I2c Hardware Set to: %s" % self._settings.get(["hardwareAddress"]))
+
+    def get_template_vars(self):
+        return dict(
+            hardwareAddress=self._settings.get(["hardwareAddress"]),
+            heaterGPIOPin=self._settings.get(["heaterGPIOPin"]),
+            fanGPIOPin=self._settings.get(["fanGPIOPin"]),
+            currentTemperature=self.currentTemperature
+            )
+
+    def get_template_configs(self):
+        return [
+            dict(type="settings", custom_bindings=False)
+        ]
+
+    def get_api_commands(self):
+        return dict(
+            start_timer=[],
+            stop_timer=[]
+        )
+
+    def on_api_command(self, command, data):
+        self._logger.info("I2c Got API Call (%s)" % command)
+        if command == "start_timer":
+            if self.runTimer == None:
+                self._logger.info("I2c starting timer")
+                self.runTimer = octoprint.util.RepeatedTimer(1.0, self.get_temperature)
+                self.runTimer.start()
+
+        elif command == "stop_timer":
+            if self.runTimer != None:
+                self._logger.info("I2c stopping timer")
+                self.runTimer.cancel()
+                self.runTimer = None
+ 
+    def get_temperature(self):
+        self.currentTemperature = self.currentTemperature+1
+        self._logger.info("I2c Temperature: %s" % self.currentTemperature)
+
+
 
     ##~~ Softwareupdate hook
 
@@ -60,7 +113,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
 # can be overwritten via __plugin_xyz__ control properties. See the documentation for that.
-__plugin_name__ = "I2ctempcontrol Plugin"
+__plugin_name__ = "I2C Temperature Controller"
 
 
 # Set the Python version your plugin is compatible with below. Recommended is Python 3 only for all new plugins.
