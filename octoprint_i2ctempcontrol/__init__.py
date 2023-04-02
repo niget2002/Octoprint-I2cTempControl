@@ -30,7 +30,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
     def get_settings_defaults(self):
         return dict(
-            hardwareAddress="0x00",
+            hardwareAddress="0x48",
             heaterGPIOPin="00",
             fanGPIOPin="01",
             temperatureMin=10,
