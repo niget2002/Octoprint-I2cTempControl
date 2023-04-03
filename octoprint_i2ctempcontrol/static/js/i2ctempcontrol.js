@@ -8,12 +8,6 @@ $(function() {
     function I2ctempcontrolViewModel(parameters) {
         var self = this;
 
-        // assign the injected parameters, e.g.:
-        // self.loginStateViewModel = parameters[0];
-        // self.settingsViewModel = parameters[1];
-
-        // TODO: Implement your plugin's view model here.
-
         self.settings = parameters[0];
         self.temperatureValue = ko.observable(0);
         self.fanState = ko.observable("Off");
@@ -21,10 +15,10 @@ $(function() {
 
         self.onDataUpdaterPluginMessage = function (plugin, data) {
             if (data.temperatureValue) { self.temperatureValue(data.temperatureValue); }        
-            if (data.fanState) { self.fanState("On") }
-            if (data.fanState < 0) {self.fanState("Off") }        
-            if (data.heaterState) { self.heaterState("On") }
-            if (data.heaterState < 0) { self.heaterState("Off") }     
+            if (data.fanState == 1) { self.fanState("On") }
+            else {self.fanState("Off") }        
+            if (data.heaterState == 1) { self.heaterState("On") }
+            else { self.heaterState("Off") }     
         }
 
         self.startLoop = function() {
@@ -35,17 +29,14 @@ $(function() {
             OctoPrint.simpleApiCommand('i2ctempcontrol', 'stop_timer');       
         }
 
+        self.onBeforeBinding = function() {
+            self.temperatureValue(self.settings.settings.plugins.i2ctempcontrol.currentTemperature());
+        }
     }
 
-    /* view model class, parameters for constructor, container to bind to
-     * Please see http://docs.octoprint.org/en/master/plugins/viewmodels.html#registering-custom-viewmodels for more details
-     * and a full list of the available options.
-     */
     OCTOPRINT_VIEWMODELS.push({
         construct: I2ctempcontrolViewModel,
-        // ViewModels your plugin depends on, e.g. loginStateViewModel, settingsViewModel, ...
-        dependencies: [ "settingsViewModel" /* "loginStateViewModel", "settingsViewModel" */ ],
-        // Elements to bind to, e.g. #settings_plugin_i2ctempcontrol, #tab_plugin_i2ctempcontrol, ...
-        elements: ["#tab_plugin_i2ctempcontrol" /* ... */ ]
+        dependencies: [ "settingsViewModel" ],
+        elements: ["#tab_plugin_i2ctempcontrol" ]
     });
 });

@@ -1,17 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-### (Don't forget to remove me)
-# This is a basic skeleton for your plugin's __init__.py. You probably want to adjust the class name of your plugin
-# as well as the plugin mixins it's subclassing from. This is really just a basic skeleton to get you started,
-# defining your plugin as a template plugin, settings and asset plugin. Feel free to add or remove mixins
-# as necessary.
-#
-# Take a look at the documentation on what other plugin mixins are available.
-
 import octoprint.plugin
 import octoprint.util
-import time
 import smbus
 import RPi.GPIO as GPIO
 
@@ -31,53 +22,48 @@ LM75_CONF_OS_F_QUE 	 	= 3
 
 
 class LM75(object):
-	def __init__(self, mode=LM75_CONF_OS_COMP_INT, i2c_address=LM75_ADDRESS,
+    """ 
+    Manages the IO commands for the LM75 Temperature sensor
+    """
+    def __init__(self, mode=LM75_CONF_OS_COMP_INT, i2c_address=LM75_ADDRESS,
 							 busnum=I2C_BUS_NUMBER):
-		self._mode = mode
-		self.i2c_address = i2c_address
-		self._bus = smbus.SMBus(busnum)
+        self._mode = mode
+        self.i2c_address = i2c_address
+        self._bus = smbus.SMBus(busnum)
 
-	def getRegisterVal(self):
-		"""
+    def getRegisterVal(self):
+        """
 		Reads the temp from the LM75 sensor.
 		Returns the raw register value.
 		"""
-		try:
+        try:
 			#Read from the temperature register on the chip
-			raw = self._bus.read_word_data(self.i2c_address, LM75_TEMP_REGISTER) & 0xFFFF
+            raw = self._bus.read_word_data(self.i2c_address, LM75_TEMP_REGISTER) & 0xFFFF
 			#Swap LSB and MSB
-			reordered_raw = ((raw << 8) & 0xFF00) + (raw >> 8)
+            reordered_raw = ((raw << 8) & 0xFF00) + (raw >> 8)
 			#Check to see if we have a positive or negative temperature
 			# Bit 16 is the positive or negative flag.
 			# Shift it over into bit 1 so we can use it as a boolean
-			temperature_is_negative = (reordered_raw >> 15)
+            temperature_is_negative = (reordered_raw >> 15)
 			#Only the 11 most significant bits contain temperature data
 			# For positive temperatures we just shift over 5 bits
 			# For negative temperatures we shift over 5 bits and take two complement
-			if temperature_is_negative:
-				register_value = (((reordered_raw >> 5) & 0xFFFF) - 1) - 0b0000011111111111
-			else:
-				register_value = reordered_raw >> 5
-		except:
-			print("Error while trying to read i2c bus at chip address", hex(self.i2c_address), "\n")
-			raise
-		return register_value
+            if temperature_is_negative:
+                register_value = (((reordered_raw >> 5) & 0xFFFF) - 1) - 0b0000011111111111
+            else:
+                register_value = reordered_raw >> 5
+        except:
+            self._logger.info("Error while trying to read i2c bus at chip address %s" % hex(self.i2c_address))
+            raise
+        return register_value
 
-	def getCelsius(self):
-		"""
+    def getCelsius(self):
+        """
 		Converts raw register value into celsius temperature reading.
 		Returns celsius degrees to three decimal places.
 		"""
-		c_val = self.getRegisterVal() * 0.125
-		return round(c_val, 3)
-
-	def getFahrenheit(self):
-		"""
-		Converts celsius temperature reading into fahrenheit.
-		Returns fahrenheit degrees to thre decimal places.
-		"""
-		f_val = (self.getCelsius() * (9.0/5.0)) + 32.0
-		return round(f_val, 3)
+        c_val = self.getRegisterVal() * 0.125
+        return round(c_val, 3)
 
 class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     octoprint.plugin.AssetPlugin,
@@ -89,8 +75,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 ):
 
     def __init__(self):
-        self.fanState=-1
-        self.heaterState=-1
+        self.fanState=0
+        self.heaterState=0
         self.runTimer = None
 
         # setup LM75 Temp Sensor
@@ -169,8 +155,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                 self._logger.info("I2c stopping timer")
                 self.runTimer.cancel()
                 self.runTimer = None
-                self.fanState = -1
-                self.heaterState = -1
+                self.fanState = 0
+                self.heaterState = 0
                 self.update_relays()
                 self.update_data()
  
@@ -178,27 +164,21 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self._logger.info("Getting Chamber Temperature")
         self.currentTemperature = self.sensor.getCelsius()
         if self.currentTemperature < self._settings.get(["temperatureMin"]):
-            self.fanState = -1
+            self.fanState = 0
             self.heaterState = 1
         elif self.currentTemperature > self._settings.get(["temperatureMax"]):
             self.fanState = 1
-            self.heaterState = -1
+            self.heaterState = 0
         else:
-             self.fanState = -1
-             self.heaterState = -1
+             self.fanState = 0
+             self.heaterState = 0
         self.update_relays()
         self.update_data()
         self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
     def update_relays(self):
-        if self.heaterState == 1:
-            GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.HIGH)
-        else:
-             GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.LOW)
-        if self.fanState == 1:
-            GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.HIGH)
-        else:
-             GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
+        GPIO.output(self._settings.get(["heaterGPIOPin"]), self.heaterState)
+        GPIO.output(self._settings.get(["fanGPIOPin"]), self.fanState)
 
     def update_data(self):
         msg = dict( 
