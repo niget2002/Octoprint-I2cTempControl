@@ -91,7 +91,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self.fanState=0
         self.heaterState=0
         self.runTimer = None
-        sensor = LM75()
+        self.sensor = LM75()
 
     ##~~ SettingsPlugin mixin
 
