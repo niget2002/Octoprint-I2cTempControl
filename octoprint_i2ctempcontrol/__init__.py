@@ -183,9 +183,9 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         elif self.currentTemperature > self._settings.get(["temperatureMax"]):
             self.fanState = 1
             self.heaterState = -1
-        elif self._settings.get(["temperatureMin"]) < self.currentTemperature < self._settings.get(["temperatureMax"]):
-            self.fanstate = -1
-            self.heaterState = -1
+        else:
+             self.fanstate = -1
+             self.heaterstate = -1
         self.update_relays()
         self.update_data()
         self._logger.debug("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
