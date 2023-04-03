@@ -30,7 +30,7 @@ $(function() {
         }
 
         self.onBeforeBinding = function() {
-            self.temperatureValue(self.settings.settings.plugins.i2ctempcontrol.currentTemperature());
+            self.temperatureValue(self.settings.settings.plugins.i2ctempcontrol.temperatureValue());
         }
     }
 
