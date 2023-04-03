@@ -161,7 +161,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         if command == "start_timer":
             if self.runTimer == None:
                 self._logger.info("I2c starting timer")
-                self.runTimer = octoprint.util.RepeatedTimer(5.0, self.get_temperature)
+                self.runTimer = octoprint.util.RepeatedTimer(5.0, self.get_temperature, run_first=True)
                 self.runTimer.start()
 
         elif command == "stop_timer":
