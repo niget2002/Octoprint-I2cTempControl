@@ -13,6 +13,7 @@ import octoprint.plugin
 import octoprint.util
 import time
 import smbus
+import RPi.GPIO as GPIO
 
 
 I2C_BUS_NUMBER			= 1
@@ -90,6 +91,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self.fanState=0
         self.heaterState=0
         self.runTimer = None
+
+        # setup LM75 Temp Sensor
         self.sensor = LM75()
         self.currentTemperature= self.sensor.getCelsius()
 
@@ -98,8 +101,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def get_settings_defaults(self):
         return dict(
             hardwareAddress="0x48",
-            heaterGPIOPin="00",
-            fanGPIOPin="01",
+            heaterGPIOPin="13",
+            fanGPIOPin="15",
             temperatureMin=20,  # decent for PLA
             temperatureMax=30   # decent for PLA
             )
@@ -118,6 +121,12 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     ##~~ Startup Plugin
     def on_after_startup(self):
         self._logger.info("I2c Hardware Set to: %s" % self._settings.get(["hardwareAddress"]))
+        self.update_data()
+
+        # Setup GPIO
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(self._settings.get(["fanGPIOPin"]), GPIO.OUT)
+        GPIO.setup(self._settings.get(["heaterGPIOPin"]), GPIO.OUT)
 
     def get_template_vars(self):
         return dict(
@@ -168,9 +177,19 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         elif self._settings.get(["temperatureMin"]) < self.currentTemperature < self._settings.get(["temperatureMax"]):
             self.fanstate = -1
             self.heaterState = -1
+        self.update_relays()
         self.update_data()
         self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
+    def update_relays(self):
+        if self.heaterState:
+            GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.HIGH)
+        else:
+             GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.LOW)
+        if self.fanState:
+            GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.HIGH)
+        else:
+             GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
 
     def update_data(self):
         msg = dict( 

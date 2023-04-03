@@ -4,11 +4,9 @@
     Current Fan GPIO Pin: {{ plugin_i2ctempcontrol_fanGPIOPin|escape }}<p>
     Current Temperature Min: {{ plugin_i2ctempcontrol_temperatureMin|escape }}<p>
     Current Temperature Max: {{ plugin_i2ctempcontrol_temperatureMax|escape }}<p><p>
-
     Current I2C Temperature: <text title="{{ _('I2C Temperature') }}" data-bind="html: temperatureValue()"></text><p> 
     Current Fan State: <text title="{{ _('Fan State') }}" data-bind="html: fanState()"></text><p> 
     Current Heater State: <text title="{{ _('Heater State') }}" data-bind="html: heaterState()"></text><p><p>
-
     <button class="btn btn-primary" data-bind="click: startLoop">{{ _('Start') }}</button>
     <button class="btn btn-primary" data-bind="click: stopLoop">{{ _('Stop') }}</button>
 </div>
