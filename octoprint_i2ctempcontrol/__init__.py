@@ -84,12 +84,13 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     octoprint.plugin.ProgressPlugin,
     octoprint.plugin.TemplatePlugin,
     octoprint.plugin.StartupPlugin,
+    octoprint.plugin.ShutdownPlugin,
     octoprint.plugin.SimpleApiPlugin
 ):
 
     def __init__(self):
-        self.fanState=0
-        self.heaterState=0
+        self.fanState=-1
+        self.heaterState=-1
         self.runTimer = None
 
         # setup LM75 Temp Sensor
@@ -130,6 +131,11 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         GPIO.setup(self._settings.get(["fanGPIOPin"]), GPIO.OUT)
         GPIO.setup(self._settings.get(["heaterGPIOPin"]), GPIO.OUT)
 
+    def on_shutdown(self):
+        GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.LOW)
+        GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
+        GPIO.cleanup()
+
     def get_template_vars(self):
         return dict(
             hardwareAddress=self._settings.get(["hardwareAddress"]),
@@ -165,10 +171,11 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                 self.runTimer = None
                 self.fanState = -1
                 self.heaterState = -1
+                self.update_relays()
                 self.update_data()
  
     def get_temperature(self):
-        self._logger.info("Getting Chamber Temperature")
+        self._logger.debug("Getting Chamber Temperature")
         self.currentTemperature = self.sensor.getCelsius()
         if self.currentTemperature < self._settings.get(["temperatureMin"]):
             self.fanState = -1
@@ -181,7 +188,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             self.heaterState = -1
         self.update_relays()
         self.update_data()
-        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
+        self._logger.debug("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
     def update_relays(self):
         if self.heaterState:
