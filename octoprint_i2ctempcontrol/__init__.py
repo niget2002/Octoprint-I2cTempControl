@@ -101,8 +101,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def get_settings_defaults(self):
         return dict(
             hardwareAddress="0x48",
-            heaterGPIOPin="13",
-            fanGPIOPin="15",
+            heaterGPIOPin=13,
+            fanGPIOPin=15,
             temperatureMin=20,  # decent for PLA
             temperatureMax=30   # decent for PLA
             )
@@ -120,7 +120,9 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
     ##~~ Startup Plugin
     def on_after_startup(self):
-        self._logger.info("I2c Hardware Set to: %s" % self._settings.get(["hardwareAddress"]))
+        self._logger.info("I2c Temp Probe Set to: %s" % self._settings.get(["hardwareAddress"]))
+        self._logger.info("I2c Fan Set to: %s" % self._settings.get(["fanGPIOPin"]))
+        self._logger.info("I2c Heater Set to: %s" % self._settings.get(["heaterGPIOPin"]))
         self.update_data()
 
         # Setup GPIO
