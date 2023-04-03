@@ -157,7 +157,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                 self.update_data()
  
     def get_temperature(self):
-        self.currentTemperature = sensor.getCelsius()
+        self._logger.info("Getting Chamber Temperature")
+        self.currentTemperature = self.sensor.getCelsius()
         if self.currentTemperature < self._settings.get(["temperatureMin"]):
             self.fanState = -1
             self.heaterState = 1
