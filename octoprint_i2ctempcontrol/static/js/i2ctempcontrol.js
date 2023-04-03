@@ -29,7 +29,7 @@ $(function() {
             OctoPrint.simpleApiCommand('i2ctempcontrol', 'stop_timer');       
         }
 
-        self.onBeforeBinding = function() {
+        self.onStartupComplete = function() {
             Octoprint.simpleApiCommand('i2ctempcontrol', 'force_update');
         }
     }
