@@ -11,6 +11,14 @@
         <label class="control-label">{{ _('Fan GPIO Pin') }}</label>
         <div class="controls">
             <input type="text" class="input-block-level" data-bind="value: settings.plugins.i2ctempcontrol.fanGPIOPin">
-        </div>        
+        </div>
+        <label class="control-label">{{ _('Temperature Min') }}</label>
+        <div class="controls">
+            <input type="text" class="input-block-level" data-bind="value: settings.plugins.i2ctempcontrol.temperatureMin">
+        </div> 
+        <label class="control-label">{{ _('Temperature Max') }}</label>
+        <div class="controls">
+            <input type="text" class="input-block-level" data-bind="value: settings.plugins.i2ctempcontrol.temperatureMax">
+        </div>         
     </div>
 </form>

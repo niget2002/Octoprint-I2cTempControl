@@ -100,8 +100,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             hardwareAddress="0x48",
             heaterGPIOPin="00",
             fanGPIOPin="01",
-            temperatureMin=10,
-            temperatureMax=20
+            temperatureMin=20,  # decent for PLA
+            temperatureMax=30   # decent for PLA
             )
 
     ##~~ AssetPlugin mixin
