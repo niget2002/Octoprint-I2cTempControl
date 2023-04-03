@@ -87,11 +87,11 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 ):
 
     def __init__(self):
-        self.currentTemperature=0
         self.fanState=0
         self.heaterState=0
         self.runTimer = None
         self.sensor = LM75()
+        self.currentTemperature= self.sensor.getCelsius()
 
     ##~~ SettingsPlugin mixin
 
