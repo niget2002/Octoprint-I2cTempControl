@@ -129,7 +129,6 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             fanGPIOPin=self._settings.get(["fanGPIOPin"]),
             temperatureMin=self._settings.get(["temperatureMin"]),
             temperatureMax=self._settings.get(["temperatureMax"]),
-            temperatureValue=self.currentTemperature
             )
 
     def get_template_configs(self):
@@ -140,7 +139,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def get_api_commands(self):
         return dict(
             start_timer=[],
-            stop_timer=[]
+            stop_timer=[],
+            force_update=[]
         )
 
     def on_api_command(self, command, data):
@@ -160,6 +160,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                 self.heaterState = 0
                 self.update_relays()
                 self.update_data()
+        elif command == "force_update":
+            self.update_data()
  
     def get_temperature(self):
         self._logger.info("Getting Chamber Temperature")

@@ -9,7 +9,7 @@ $(function() {
         var self = this;
 
         self.settings = parameters[0];
-        self.temperatureValue = ko.observable(0);
+        self.temperatureValue = ko.observable();
         self.fanState = ko.observable("Off");
         self.heaterState = ko.observable("Off");
 
@@ -30,7 +30,7 @@ $(function() {
         }
 
         self.onBeforeBinding = function() {
-            self.temperatureValue(self.settings.settings.plugins.i2ctempcontrol.temperatureValue());
+            Octoprint.simpleApiCommand('i2ctempcontrol', 'force_update');
         }
     }
 
