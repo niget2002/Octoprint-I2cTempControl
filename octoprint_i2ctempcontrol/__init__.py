@@ -128,7 +128,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             heaterGPIOPin=self._settings.get(["heaterGPIOPin"]),
             fanGPIOPin=self._settings.get(["fanGPIOPin"]),
             temperatureMin=self._settings.get(["temperatureMin"]),
-            temperatureMax=self._settings.get(["temperatureMax"])
+            temperatureMax=self._settings.get(["temperatureMax"]),
+            currentTemperature=self.currentTemperature
             )
 
     def get_template_configs(self):
