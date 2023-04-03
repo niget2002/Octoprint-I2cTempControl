@@ -184,8 +184,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             self.fanState = 1
             self.heaterState = -1
         else:
-             self.fanstate = -1
-             self.heaterstate = -1
+             self.fanState = -1
+             self.heaterState = -1
         self.update_relays()
         self.update_data()
         self._logger.debug("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
@@ -193,11 +193,11 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def update_relays(self):
         if self.heaterState:
             GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.HIGH)
-        else:
+        elif self.heaterState == -1:
              GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.LOW)
         if self.fanState:
             GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.HIGH)
-        else:
+        elif self.fanState == -1:
              GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
 
     def update_data(self):
