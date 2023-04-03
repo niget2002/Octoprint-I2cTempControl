@@ -30,7 +30,7 @@ $(function() {
         }
 
         self.onStartupComplete = function() {
-            Octoprint.simpleApiCommand('i2ctempcontrol', 'force_update');
+            OctoPrint.simpleApiCommand('i2ctempcontrol', 'force_update');
         }
     }
 
