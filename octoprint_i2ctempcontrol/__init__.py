@@ -75,6 +75,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 ):
 
     def __init__(self):
+        self.last_temp = dict()
         self.fanState=0
         self.heaterState=0
         self.controlTimer = None
@@ -185,6 +186,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
              self.fanState = 0
              self.heaterState = 0
         self.update_data()
+        self.last_temp["Chamber"] = (self.currentTemperature, None)
         self._logger.debug("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
     def update_relays(self):
@@ -199,6 +201,10 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             heaterState = self.heaterState
             )
         self._plugin_manager.send_plugin_message(self._identifier, msg)
+
+    def temp_callback(self, comm, parsed_temps):
+        parsed_temps.update(self.last_temp)
+        return parsed_temps
 
     ##~~ Softwareupdate hook
 
@@ -221,10 +227,6 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                 "pip": "https://github.com/niget2002/OctoPrint-I2ctempcontrol/archive/{target_version}.zip",
             }
         }
-
-    def temp_callback(self, comm, parsed_temps):
-        parsed_temps.update({"Chamber" : (self.currentTemperature,self._settings.get(["temperatureMax"]))})
-        return parsed_temps
 
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
