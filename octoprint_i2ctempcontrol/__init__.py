@@ -223,7 +223,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         }
 
     def temp_callback(self, comm, parsed_temps):
-        parsed_temps.update(self.currentTemperature)
+        parsed_temps.update({"Chamber" : (self.currentTemperature,self._settings.get(["temperatureMax"]))})
         return parsed_temps
 
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
