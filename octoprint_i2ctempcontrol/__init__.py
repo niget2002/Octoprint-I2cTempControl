@@ -77,11 +77,11 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def __init__(self):
         self.fanState=0
         self.heaterState=0
-        self.runTimer = None
+        self.controlTimer = None
+        self.temperatureTimer = None
 
         # setup LM75 Temp Sensor
         self.sensor = LM75()
-        self.currentTemperature= self.sensor.getCelsius()
 
     ##~~ SettingsPlugin mixin
 
@@ -90,8 +90,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             hardwareAddress="0x48",
             heaterGPIOPin=13,
             fanGPIOPin=15,
-            temperatureMin=20,  # decent for PLA
-            temperatureMax=30   # decent for PLA
+            temperatureMin=15,  # decent for PLA
+            temperatureMax=25   # decent for PLA
             )
 
     ##~~ AssetPlugin mixin
@@ -117,10 +117,18 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         GPIO.setup(self._settings.get(["fanGPIOPin"]), GPIO.OUT)
         GPIO.setup(self._settings.get(["heaterGPIOPin"]), GPIO.OUT)
 
+        # Start temperatureTimer
+        self.temperatureTimer = octoprint.util.RepeatedTimer(10.0, self.get_temperature, run_first=True)
+        self.temperatureTimer.start()
+
+
     def on_shutdown(self):
         GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.LOW)
         GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
         GPIO.cleanup()
+        self.temperatureTimer.stop()
+        self.controlTimer.stop()
+
 
     def get_template_vars(self):
         return dict(
@@ -146,16 +154,16 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def on_api_command(self, command, data):
         self._logger.info("I2c Got API Call (%s)" % command)
         if command == "start_timer":
-            if self.runTimer == None:
-                self._logger.info("I2c starting timer")
-                self.runTimer = octoprint.util.RepeatedTimer(5.0, self.get_temperature, run_first=True)
-                self.runTimer.start()
+            if self.controlTimer == None:
+                self._logger.debug("I2c starting timer")
+                self.controlTimer = octoprint.util.RepeatedTimer(30.0, self.update_relays, run_first=True)
+                self.controlTimer.start()
 
         elif command == "stop_timer":
-            if self.runTimer != None:
-                self._logger.info("I2c stopping timer")
-                self.runTimer.cancel()
-                self.runTimer = None
+            if self.controlTimer != None:
+                self._logger.debug("I2c stopping timer")
+                self.controlTimer.cancel()
+                self.controlTimer = None
                 self.fanState = 0
                 self.heaterState = 0
                 self.update_relays()
@@ -164,7 +172,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             self.update_data()
  
     def get_temperature(self):
-        self._logger.info("Getting Chamber Temperature")
+        self._logger.debug("Getting Chamber Temperature")
         self.currentTemperature = self.sensor.getCelsius()
         if self.currentTemperature < self._settings.get(["temperatureMin"]):
             self.fanState = 0
@@ -175,13 +183,13 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         else:
              self.fanState = 0
              self.heaterState = 0
-        self.update_relays()
         self.update_data()
-        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
+        self._logger.debug("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
     def update_relays(self):
         GPIO.output(self._settings.get(["heaterGPIOPin"]), self.heaterState)
         GPIO.output(self._settings.get(["fanGPIOPin"]), self.fanState)
+        self.update_data()
 
     def update_data(self):
         msg = dict( 
