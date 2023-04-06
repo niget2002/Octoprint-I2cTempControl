@@ -83,7 +83,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         # setup LM75 Temp Sensor
         self.sensor = LM75()
         self.currentTemperature = 0
-        
+
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
@@ -222,6 +222,9 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             }
         }
 
+    def temp_callback(self, comm, parsed_temps):
+        parsed_temps.update(self.currentTemperature)
+        return parsed_temps
 
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
@@ -240,5 +243,6 @@ def __plugin_load__():
 
     global __plugin_hooks__
     __plugin_hooks__ = {
-        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
+        "octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
+        "octoprint.comm.protocol.temperatures.received": __plugin_implementation__.temp_callback
     }
