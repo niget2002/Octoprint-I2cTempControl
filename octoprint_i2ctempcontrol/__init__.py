@@ -82,7 +82,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
         # setup LM75 Temp Sensor
         self.sensor = LM75()
-
+        self.currentTemperature = 0
+        
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
