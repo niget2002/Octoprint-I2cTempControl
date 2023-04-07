@@ -100,6 +100,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             )
     
     def on_settings_save(self, data):
+        self._logger.info("Updating settings")
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
         self.variable_setup()
         self.update_UI()
@@ -146,8 +147,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def variable_setup(self):
         self.temperatures = {
             "current" : 0,
-            "setMin" : self._settings.get(["temperatureMin"]),
-            "setMax" : self._settings.get(["temperatureMax"])
+            "setMin" : int(self._settings.get(["temperatureMin"])),
+            "setMax" : int(self._settings.get(["temperatureMax"]))
         }
 
     ##~~ UI setup
