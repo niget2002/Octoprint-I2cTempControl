@@ -1,12 +1,31 @@
 <div>
-    Current I2C Hardware address: {{ plugin_i2ctempcontrol_hardwareAddress|escape }}<p>
-    Current Heater GPIO Pin: {{ plugin_i2ctempcontrol_heaterGPIOPin|escape }}<p>
-    Current Fan GPIO Pin: {{ plugin_i2ctempcontrol_fanGPIOPin|escape }}<p>
-    Current Temperature Min: {{ plugin_i2ctempcontrol_temperatureMin|escape }}<p>
-    Current Temperature Max: {{ plugin_i2ctempcontrol_temperatureMax|escape }}<p><p>
-    Current I2C Temperature: <text title="{{ _('I2C Temperature') }}" data-bind="html: temperatureValue()"></text><p> 
-    Current Fan State: <text title="{{ _('Fan State') }}" data-bind="html: fanState()"></text><p> 
-    Current Heater State: <text title="{{ _('Heater State') }}" data-bind="html: heaterState()"></text><p><p>
+<table>
+    <tr>
+        <td>Chamber Temperature</td>
+        <td><text title="{{ _('I2C Temperature') }}" data-bind="html: temperatureValue()"></text></td>
+    </tr>
+    <tr>
+        <td>Set Temperature</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Min</td>
+        <td>{{ plugin_i2ctempcontrol_temperatureMin|escape }}</td>
+    </tr>
+        <td>Max</td>
+        <td>{{ plugin_i2ctempcontrol_temperatureMax|escape }}</td>
+    </tr>
+    <tr>
+        <td>Current State</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Fan</td>
+        <td><text title="{{ _('Fan State') }}" data-bind="html: fanState()"></text></td>
+        <td>Heater</td>
+        <td><text title="{{ _('Heater State') }}" data-bind="html: heaterState()"></text></td>
+    </tr>
+</table>
     <button class="btn btn-primary" data-bind="click: startLoop">{{ _('Start') }}</button>
     <button class="btn btn-primary" data-bind="click: stopLoop">{{ _('Stop') }}</button>
 </div>
