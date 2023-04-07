@@ -98,6 +98,9 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             temperatureMin=15,  # decent for PLA
             temperatureMax=25   # decent for PLA
             )
+    
+    def on_settings_save(self, data):
+        self.update_UI()
 
     ##~~ AssetPlugin mixin
 
@@ -189,19 +192,23 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         if self.controlRunning:
             self._logger.info("Testing Temperatures Test %s Min %s Max %s" % (self.currentTemperature, self._settings.get(["temperatureMin"]), self._settings.get(["temperatureMax"])))
             if self.currentTemperature < self._settings.get(["temperatureMin"]):
+                self._logger.info("Turning Heater On")
                 self.fanState = 0
                 self.heaterState = 1
                 self.setTemp = self._settings.get(["temperatureMin"])
             elif self.currentTemperature > self._settings.get(["temperatureMax"]):
+                self._logger.info("Turning Fan On")
                 self.fanState = 1
                 self.heaterState = 0
                 self.setTemp = self._settings.get(["temperatureMax"])
             else:
+                self._logger.info("Turning Heater/Fan Off")
                 self.fanState = 0
                 self.heaterState = 0
                 self.setTemp = None
         else:
             self.setTemp = None
+        self._logger.info("Updatin UI")
         self.update_UI()
         self.last_temp["Chamber"] = (self.currentTemperature, self.setTemp)
         self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
