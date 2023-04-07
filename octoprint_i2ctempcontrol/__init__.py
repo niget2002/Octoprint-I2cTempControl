@@ -80,6 +80,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self.heaterState=0
         self.controlTimer = None
         self.temperatureTimer = None
+        self.shutdownTimer = None
+        self.setTemp = None
 
         # setup LM75 Temp Sensor
         self.sensor = LM75()
@@ -123,7 +125,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self.temperatureTimer = octoprint.util.RepeatedTimer(10.0, self.get_temperature, run_first=True)
         self.temperatureTimer.start()
 
-
+    ##~~ Shutdown Plugin
     def on_shutdown(self):
         GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.LOW)
         GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
@@ -131,7 +133,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self.temperatureTimer.stop()
         self.controlTimer.stop()
 
-
+    ##~~ UI setup
     def get_template_vars(self):
         return dict(
             hardwareAddress=self._settings.get(["hardwareAddress"]),
@@ -173,18 +175,22 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         elif command == "force_update":
             self.update_data()
  
+    ##~~ Main Control Function
     def get_temperature(self):
         self._logger.debug("Getting Chamber Temperature")
         self.currentTemperature = self.sensor.getCelsius()
         if self.currentTemperature < self._settings.get(["temperatureMin"]):
             self.fanState = 0
             self.heaterState = 1
+            self.setTemp = self._settings.get(["temperatureMin"])
         elif self.currentTemperature > self._settings.get(["temperatureMax"]):
             self.fanState = 1
             self.heaterState = 0
+            self.setTemp = self._settings.get(["temperatureMax"])
         else:
              self.fanState = 0
              self.heaterState = 0
+             self.setTemp = None
         self.update_data()
         self.last_temp["Chamber"] = (self.currentTemperature, None)
         self._logger.debug("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
@@ -202,6 +208,24 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             )
         self._plugin_manager.send_plugin_message(self._identifier, msg)
 
+    ##~~ When Print Finishes, Cool the chamber
+    def on_print_progress(self, storage, path, progress):
+        if progress == 100:
+            self.controlTimer.stop()
+            self.fanState = 1
+            self.heaterState = 0
+            self.update_relays(self)
+            self.shutdownTimer = octoprint.util.RepeatedTimer(600.0, self.jobIsDone())
+            self.shutdownTimer.start()
+        return
+    
+    def jobIsDone(self):
+        self.shutdownTimer.stop()
+        self.shutdownTimer = None
+        self.fanState = 0
+        self.update_relays(self) 
+
+    ##~~ Add Chamber Temperature to the Temp graph
     def temp_callback(self, comm, parsed_temps):
         parsed_temps.update(self.last_temp)
         return parsed_temps
