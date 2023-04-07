@@ -134,7 +134,6 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
         GPIO.cleanup()
         self.temperatureTimer.stop()
-        self.controlTimer.stop()
 
     ##~~ UI setup
     def get_template_vars(self):
@@ -164,7 +163,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             if self.controlRunning == 0:
                 self.controlRunning = 1
         elif command == "stop_timer":
-            if self.controlTimer:
+            if self.controlRunning:
                 self.controlRunning = 0
         elif command == "force_update":
             self.update_UI()
