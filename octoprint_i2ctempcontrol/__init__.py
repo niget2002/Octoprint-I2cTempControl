@@ -201,7 +201,14 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             self.fanState = 1
             self.heaterState = 0
             self.setTemp = self._settings.get(["temperatureMax"])
-        elif GPIO.input(self._settings.get(["heaterGPIOPin"])) or GPIO.input(self._settings.get(["fanGPIOPin"])):
+        elif (
+                (
+                    self._settings.get(["temperatureMin"]) < self.currentTemperature < self._settings.get(["temperatureMax"])
+                ) and 
+                (
+                    GPIO.input(self._settings.get(["heaterGPIOPin"])) or GPIO.input(self._settings.get(["fanGPIOPin"]))
+                )
+            ):
             self._logger.info("Turning heater/fan Off")
             self.fanState = 0
             self.heaterState = 0
