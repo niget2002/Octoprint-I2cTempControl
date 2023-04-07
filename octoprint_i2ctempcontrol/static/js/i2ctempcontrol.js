@@ -15,9 +15,6 @@ $(function() {
         self.controlState = ko.observable("Off");
         self.setTempMin = ko.observable(0);
         self.setTempMax = ko.observable(0);
-        self.heaterColor = ko.observable("red");
-        self.fanColor = ko.observable("red");
-        self.controlColor = ko.observable("red");
 
         self.onDataUpdaterPluginMessage = function (plugin, data) {
             if (data.temperatureValue) { 
@@ -30,28 +27,22 @@ $(function() {
                 self.setTempMax(data.setTempMax)
             }
             if (data.controlState == 1) { 
-                self.controlState("On");
-                self.controlColor("green");
+                self.controlState("<span style='color:green;'>On</span>");
             }
             else {
-                self.controlState("Off")
-                self.controlColor("red");
+                self.controlState("<span style='color:red;'>Off</span>")
             }       
             if (data.fanState == 1) {
-                self.fanState("On")
-                self.fanColor("green");
+                self.fanState("<span style='color:green;'>On</span>")
             }
             else {
-                self.fanState("Off")
-                self.fanColor("red");
+                self.fanState("<span style='color:red;'>Off</span>")
             }        
             if (data.heaterState == 1) {
-                self.heaterState("On")
-                self.heaterColor("green");
+                self.heaterState("<span style='color:green;'>On</span>")
             }
             else {
-                self.heaterState("Off")
-                self.heaterColor("red");
+                self.heaterState("<span style='color:red;'>Off</span>")
             }     
         }
 
