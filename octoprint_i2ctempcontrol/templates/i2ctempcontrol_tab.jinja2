@@ -14,9 +14,9 @@
     </tr>
     <tr>
         <td>Min</td>
-        <td>{{ plugin_i2ctempcontrol_temperatureMin|escape }}</td>
+        <td><text title="{{ _('Set Temp Min') }}" data-bind="html: setTempMin()"></text></td>
         <td>Max</td>
-        <td>{{ plugin_i2ctempcontrol_temperatureMax|escape }}</td>
+        <td><text title="{{ _('Set Temp Max') }}" data-bind="html: setTempMax()"></text></td>
     </tr>
     <tr>
         <th>Current State</th>

@@ -13,10 +13,14 @@ $(function() {
         self.fanState = ko.observable("Off");
         self.heaterState = ko.observable("Off");
         self.controlState = ko.observable("Off");
+        self.setTempMin = ko.observable(0);
+        self.setTempMax = ko.observable(0);
 
         self.onDataUpdaterPluginMessage = function (plugin, data) {
-            if (data.temperatureValue) { self.temperatureValue(data.temperatureValue); } 
-            if (data.controlRunning == 1) { self.controlState("On");}
+            if (data.temperatureValue) { self.temperatureValue(data.temperatureValue); }
+            if (data.setTempMin) {self.setTempMin(data.setTempMin)}
+            if (data.setTempMax) {self.setTempMin(data.setTempMax)}
+            if (data.controlState == 1) { self.controlState("On");}
             else {self.controlState("Off")}       
             if (data.fanState == 1) { self.fanState("On") }
             else {self.fanState("Off") }        
