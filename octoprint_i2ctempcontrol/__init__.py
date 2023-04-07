@@ -86,7 +86,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
         # setup LM75 Temp Sensor
         self.sensor = LM75()
-        self.currentTemperature = 0
+        self.temperatures["current"] = 0
 
     ##~~ SettingsPlugin mixin
 
@@ -192,28 +192,28 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
  
     ##~~ Main Control Function
     def get_temperature(self):
-        self.currentTemperature = self.sensor.getCelsius()
+        self.temperatures["current"] = self.sensor.getCelsius()
         if self.controlRunning:
             self.control_relays()
         self.update_UI()
-        self.last_temp["Chamber"] = (self.currentTemperature, self.setTemp)
-        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
+        self.last_temp["Chamber"] = (self.temperatures["current"], self.setTemp)
+        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.temperatures["current"], self.fanState, self.heaterState))
 
     def control_relays(self):
-        self._logger.info("Testing Temperatures Test %s Min %s Max %s" % (self.currentTemperature, self.temperatures["setMin"], self.temperatures["setMax"]))
-        if self.currentTemperature < self.temperatures["setMin"] and not self.heaterState:
+        self._logger.info("Testing Temperatures Test %s Min %s Max %s" % (self.temperatures["current"], self.temperatures["setMin"], self.temperatures["setMax"]))
+        if self.temperatures["current"] < self.temperatures["setMin"] and not self.heaterState:
             self._logger.info("Turning Heater On")
             self.fanState = 0
             self.heaterState = 1
             self.setTemp = self.temperatures["setMin"]
-        elif self.currentTemperature > self.temperatures["setMax"] and not self.fanState:
+        elif self.temperatures["current"] > self.temperatures["setMax"] and not self.fanState:
             self._logger.info("Turning Fan On")
             self.fanState = 1
             self.heaterState = 0
             self.setTemp = self.temperatures["setMax"]
         elif (
                 (
-                    self.temperatures["setMin"] < self.currentTemperature < self.temperatures["setMax"]
+                    self.temperatures["setMin"] < self.temperatures["current"] < self.temperatures["setMax"]
                 ) and 
                 (
                     GPIO.input(self._settings.get(["heaterGPIOPin"])) or GPIO.input(self._settings.get(["fanGPIOPin"]))
@@ -222,7 +222,9 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             self._logger.info("Turning heater/fan Off")
             self.fanState = 0
             self.heaterState = 0
-            self.setTemp = None  
+            self.setTemp = None 
+        else:
+            self._logger.info("Unknown State")
         self.update_relays()
 
     def update_relays(self):
@@ -232,7 +234,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
     def update_UI(self):
         msg = dict( 
-            temperatureValue = self.currentTemperature,
+            temperatureValue = self.temperatures["current"],
             fanState = self.fanState,
             heaterState = self.heaterState,
             controlState = self.controlRunning,
