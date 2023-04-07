@@ -171,10 +171,10 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self._logger.info("I2c Got API Call (%s)" % command)
         if command == "start_timer":
             if self.controlRunning == 0:
-                self.controlRunning = 1
+                self.start_timer()
         elif command == "stop_timer":
             if self.controlRunning:
-                self.controlRunning = 0
+                self.stop_timer()
         elif command == "force_update":
             self.update_UI()
 
