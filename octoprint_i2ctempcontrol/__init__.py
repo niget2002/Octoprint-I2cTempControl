@@ -76,6 +76,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
     def __init__(self):
         self.last_temp = dict()
+        self.temperatures = dict()
         self.fanState=0
         self.heaterState=0
         self.controlRunning=0
@@ -100,6 +101,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     
     def on_settings_save(self, data):
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
+        self.variable_setup()
         self.update_UI()
 
     ##~~ AssetPlugin mixin
@@ -118,7 +120,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self._logger.info("I2c Temp Probe Set to: %s" % self._settings.get(["hardwareAddress"]))
         self._logger.info("I2c Fan Set to: %s" % self._settings.get(["fanGPIOPin"]))
         self._logger.info("I2c Heater Set to: %s" % self._settings.get(["heaterGPIOPin"]))
-        self.update_UI()
+        self.variable_setup()
 
         # Setup GPIO
         GPIO.setmode(GPIO.BOARD)
@@ -136,14 +138,21 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         GPIO.cleanup()
         self.temperatureTimer.stop()
 
+    def variable_setup(self):
+        self.temperatures = {
+            "current" : 0,
+            "setMin" : self._settings.get(["temperatureMin"]),
+            "setMax" : self._settings.get(["temperatureMax"])
+        }
+
     ##~~ UI setup
     def get_template_vars(self):
         return dict(
             hardwareAddress=self._settings.get(["hardwareAddress"]),
             heaterGPIOPin=self._settings.get(["heaterGPIOPin"]),
             fanGPIOPin=self._settings.get(["fanGPIOPin"]),
-            temperatureMin=self._settings.get(["temperatureMin"]),
-            temperatureMax=self._settings.get(["temperatureMax"]),
+            temperatureMin=self.temperatures["setMin"],
+            temperatureMax=self.temperatures["setMax"]
             )
 
     def get_template_configs(self):
@@ -191,20 +200,20 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
     def control_relays(self):
-        self._logger.info("Testing Temperatures Test %s Min %s Max %s" % (self.currentTemperature, self._settings.get(["temperatureMin"]), self._settings.get(["temperatureMax"])))
-        if self.currentTemperature < self._settings.get(["temperatureMin"]) and not self.heaterState:
+        self._logger.info("Testing Temperatures Test %s Min %s Max %s" % (self.currentTemperature, self.temperatures["setMin"], self.temperatures["setMax"]))
+        if self.currentTemperature < self.temperatures["setMin"] and not self.heaterState:
             self._logger.info("Turning Heater On")
             self.fanState = 0
             self.heaterState = 1
-            self.setTemp = self._settings.get(["temperatureMin"])
-        elif self.currentTemperature > self._settings.get(["temperatureMax"]) and not self.fanState:
+            self.setTemp = self.temperatures["setMin"]
+        elif self.currentTemperature > self.temperatures["setMax"] and not self.fanState:
             self._logger.info("Turning Fan On")
             self.fanState = 1
             self.heaterState = 0
-            self.setTemp = self._settings.get(["temperatureMax"])
+            self.setTemp = self.temperatures["setMax"]
         elif (
                 (
-                    self._settings.get(["temperatureMin"]) < self.currentTemperature < self._settings.get(["temperatureMax"])
+                    self.temperatures["setMin"] < self.currentTemperature < self.temperatures["setMax"]
                 ) and 
                 (
                     GPIO.input(self._settings.get(["heaterGPIOPin"])) or GPIO.input(self._settings.get(["fanGPIOPin"]))
@@ -227,8 +236,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             fanState = self.fanState,
             heaterState = self.heaterState,
             controlState = self.controlRunning,
-            setTempMin = self._settings.get(["temperatureMin"]),
-            setTempMax = self._settings.get(["temperatureMax"])
+            setTempMin = self.temperatures["setMin"],
+            setTempMax = self.temperatures["setMax"]
             )
         self._plugin_manager.send_plugin_message(self._identifier, msg)
 
