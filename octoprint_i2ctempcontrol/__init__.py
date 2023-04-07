@@ -197,16 +197,24 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             self.control_relays()
         self.update_UI()
         self.last_temp["Chamber"] = (self.temperatures["current"], self.setTemp)
-        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.temperatures["current"], self.fanState, self.heaterState))
+        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % 
+                          (self.temperatures["current"], 
+                           self.fanState, 
+                           self.heaterState)
+                           )
 
     def control_relays(self):
-        self._logger.info("Testing Temperatures Test %s Min %s Max %s" % (self.temperatures["current"], self.temperatures["setMin"], self.temperatures["setMax"]))
-        if (self.temperatures["current"] < self.temperatures["setMin"]) and not self.heaterState:
+        self._logger.info("Testing Temperature: %s Min: %s Max: %s" % 
+                          (self.temperatures["current"], 
+                           self.temperatures["setMin"], 
+                           self.temperatures["setMax"])
+                           )
+        if self.temperatures["current"] < self.temperatures["setMin"]:
             self._logger.info("Turning Heater On")
             self.fanState = 0
             self.heaterState = 1
             self.setTemp = self.temperatures["setMin"]
-        elif (self.temperatures["current"] > self.temperatures["setMax"]) and not self.fanState:
+        elif self.temperatures["current"] > self.temperatures["setMax"]:
             self._logger.info("Turning Fan On")
             self.fanState = 1
             self.heaterState = 0
@@ -228,6 +236,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self.update_relays()
 
     def update_relays(self):
+        self._logger.info("Updating Relays")
         GPIO.output(self._settings.get(["heaterGPIOPin"]), self.heaterState)
         GPIO.output(self._settings.get(["fanGPIOPin"]), self.fanState)
         self.update_UI()
