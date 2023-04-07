@@ -201,12 +201,12 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
     def control_relays(self):
         self._logger.info("Testing Temperatures Test %s Min %s Max %s" % (self.temperatures["current"], self.temperatures["setMin"], self.temperatures["setMax"]))
-        if self.temperatures["current"] < self.temperatures["setMin"] and not self.heaterState:
+        if (self.temperatures["current"] < self.temperatures["setMin"]) and not self.heaterState:
             self._logger.info("Turning Heater On")
             self.fanState = 0
             self.heaterState = 1
             self.setTemp = self.temperatures["setMin"]
-        elif self.temperatures["current"] > self.temperatures["setMax"] and not self.fanState:
+        elif (self.temperatures["current"] > self.temperatures["setMax"]) and not self.fanState:
             self._logger.info("Turning Fan On")
             self.fanState = 1
             self.heaterState = 0
