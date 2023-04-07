@@ -19,7 +19,7 @@ $(function() {
         self.onDataUpdaterPluginMessage = function (plugin, data) {
             if (data.temperatureValue) { self.temperatureValue(data.temperatureValue); }
             if (data.setTempMin) {self.setTempMin(data.setTempMin)}
-            if (data.setTempMax) {self.setTempMin(data.setTempMax)}
+            if (data.setTempMax) {self.setTempMax(data.setTempMax)}
             if (data.controlState == 1) { self.controlState("On");}
             else {self.controlState("Off")}       
             if (data.fanState == 1) { self.fanState("On") }
