@@ -7,7 +7,7 @@
         <td>Temperature</td>
         <td><text title="{{ _('I2C Temperature') }}" data-bind="html: temperatureValue()"></text></td>
         <td>State</td>
-        <td><text title="{{ _('Control State') }}" data-bind="html: controlState()"></text></td>
+        <td><text title="{{ _('Control State') }}" style="color: controlColor()" data-bind="html: controlState()"></text></td>
     </tr>
     <tr>
         <th>Set Temperature</th>
@@ -23,9 +23,9 @@
     </tr>
     <tr>
         <td>Fan</td>
-        <td><text title="{{ _('Fan State') }}" data-bind="html: fanState()"></text></td>
+        <td><text title="{{ _('Fan State') }}" style="color: fanColor()" data-bind="html: fanState()"></text></td>
         <td>Heater</td>
-        <td><text title="{{ _('Heater State') }}" data-bind="html: heaterState()"></text></td>
+        <td><text title="{{ _('Heater State') }}" style="color: heaterColor()" data-bind="html: heaterState()"></text></td>
     </tr>
 </table>
     <button class="btn btn-primary" data-bind="click: startLoop">{{ _('Start') }}</button>
