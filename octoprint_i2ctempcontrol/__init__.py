@@ -99,6 +99,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             )
     
     def on_settings_save(self, data):
+        octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
         self.update_UI()
 
     ##~~ AssetPlugin mixin
@@ -171,6 +172,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
     def start_timer(self):
         self._logger.info("starting controller")
         self.controlRunning = 1
+        self.update_UI()
 
     def stop_timer(self):
         self._logger.info("stopping controller")
