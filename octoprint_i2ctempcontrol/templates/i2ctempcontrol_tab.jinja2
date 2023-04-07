@@ -1,22 +1,21 @@
 <div>
 <table>
     <tr>
-        <td>Chamber Temperature</td>
+        <th>Chamber Temperature</th>
         <td><text title="{{ _('I2C Temperature') }}" data-bind="html: temperatureValue()"></text></td>
     </tr>
     <tr>
-        <td>Set Temperature</td>
+        <th>Set Temperature</th>
         <td></td>
     </tr>
     <tr>
         <td>Min</td>
         <td>{{ plugin_i2ctempcontrol_temperatureMin|escape }}</td>
-    </tr>
         <td>Max</td>
         <td>{{ plugin_i2ctempcontrol_temperatureMax|escape }}</td>
     </tr>
     <tr>
-        <td>Current State</td>
+        <th>Current State</th>
         <td></td>
     </tr>
     <tr>
