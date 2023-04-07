@@ -1,10 +1,13 @@
 <div>
 <table>
     <tr>
-        <th>Chamber Temperature</th>
+        <th>Chamber State</th>
     </tr>
     <tr>
+        <td>Temperature</td>
         <td><text title="{{ _('I2C Temperature') }}" data-bind="html: temperatureValue()"></text></td>
+        <td>State</td>
+        <td><text title="{{ _('Control State') }}" data-bind="html: controlState()"></text></td>
     </tr>
     <tr>
         <th>Set Temperature</th>

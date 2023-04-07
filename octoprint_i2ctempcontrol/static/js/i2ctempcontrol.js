@@ -12,9 +12,12 @@ $(function() {
         self.temperatureValue = ko.observable();
         self.fanState = ko.observable("Off");
         self.heaterState = ko.observable("Off");
+        self.controlState = ko.observable("Off");
 
         self.onDataUpdaterPluginMessage = function (plugin, data) {
-            if (data.temperatureValue) { self.temperatureValue(data.temperatureValue); }        
+            if (data.temperatureValue) { self.temperatureValue(data.temperatureValue); } 
+            if (data.controlRunning == 1) { self.controlState("On");}
+            else {self.controlState("Off")}       
             if (data.fanState == 1) { self.fanState("On") }
             else {self.fanState("Off") }        
             if (data.heaterState == 1) { self.heaterState("On") }

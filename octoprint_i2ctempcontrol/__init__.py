@@ -115,7 +115,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self._logger.info("I2c Temp Probe Set to: %s" % self._settings.get(["hardwareAddress"]))
         self._logger.info("I2c Fan Set to: %s" % self._settings.get(["fanGPIOPin"]))
         self._logger.info("I2c Heater Set to: %s" % self._settings.get(["heaterGPIOPin"]))
-        self.update_data()
+        self.update_UI()
 
         # Setup GPIO
         GPIO.setmode(GPIO.BOARD)
@@ -165,16 +165,16 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             if self.controlTimer != None:
                 self.stop_timer()
         elif command == "force_update":
-            self.update_data()
+            self.update_UI()
 
     def start_timer(self):
-        self._logger.debug("I2c starting timer")
+        self._logger.info("I2c starting timer")
         self.controlRunning = 1
         self.controlTimer = octoprint.util.RepeatedTimer(30.0, self.update_relays, run_first=True)
         self.controlTimer.start()
 
     def stop_timer(self):
-        self._logger.debug("I2c stopping timer")
+        self._logger.info("I2c stopping timer")
         self.controlTimer.cancel()
         self.controlTimer = None
         self.controlRunning = 0
@@ -184,7 +184,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
  
     ##~~ Main Control Function
     def get_temperature(self):
-        self._logger.debug("Getting Chamber Temperature")
+        self._logger.info("Getting Chamber Temperature")
         self.currentTemperature = self.sensor.getCelsius()
         if self.controlRunning:
             if self.currentTemperature < self._settings.get(["temperatureMin"]):
@@ -201,20 +201,21 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                 self.setTemp = None
         else:
             self.setTemp = None
-        self.update_data()
+        self.update_UI()
         self.last_temp["Chamber"] = (self.currentTemperature, self.setTemp)
-        self._logger.debug("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
+        self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % (self.currentTemperature, self.fanState, self.heaterState))
 
     def update_relays(self):
         GPIO.output(self._settings.get(["heaterGPIOPin"]), self.heaterState)
         GPIO.output(self._settings.get(["fanGPIOPin"]), self.fanState)
-        self.update_data()
+        self.update_UI()
 
-    def update_data(self):
+    def update_UI(self):
         msg = dict( 
             temperatureValue = self.currentTemperature,
             fanState = self.fanState,
-            heaterState = self.heaterState
+            heaterState = self.heaterState,
+            controlState = self.controlRunning
             )
         self._plugin_manager.send_plugin_message(self._identifier, msg)
 
