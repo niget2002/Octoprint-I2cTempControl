@@ -8,3 +8,11 @@ th {
     text-align: left;
     column-span: 4;
 }
+
+.off {
+    color: red;
+}
+
+.on {
+    color: green;
+}
