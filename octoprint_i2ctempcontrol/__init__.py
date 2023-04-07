@@ -187,7 +187,6 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
  
     ##~~ Main Control Function
     def get_temperature(self):
-        self._logger.info("Getting Chamber Temperature")
         self.currentTemperature = self.sensor.getCelsius()
         self.update_UI()
         self.last_temp["Chamber"] = (self.currentTemperature, self.setTemp)
