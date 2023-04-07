@@ -103,6 +103,11 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
         self.variable_setup()
         self.update_UI()
+        self._logger.info("Resetting timer")
+        self.temperatureTimer.cancel()
+        self.temperatureTimer = None
+        self.temperatureTimer = octoprint.util.RepeatedTimer(10.0, self.get_temperature, run_first=True)
+        self.temperatureTimer.start()
 
     ##~~ AssetPlugin mixin
 
@@ -136,7 +141,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         GPIO.output(self._settings.get(["heaterGPIOPin"]), GPIO.LOW)
         GPIO.output(self._settings.get(["fanGPIOPin"]), GPIO.LOW)
         GPIO.cleanup()
-        self.temperatureTimer.stop()
+        self.temperatureTimer.cancel()
 
     def variable_setup(self):
         self.temperatures = {
