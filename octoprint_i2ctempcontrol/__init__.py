@@ -86,7 +86,6 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
         # setup LM75 Temp Sensor
         self.sensor = LM75()
-        self.temperatures["current"] = 0
 
     ##~~ SettingsPlugin mixin
 
@@ -130,8 +129,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
         # Setup GPIO
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(int(self._settings.get(["fanGPIOPin"])), GPIO.OUT)
-        GPIO.setup(int(self._settings.get(["heaterGPIOPin"])), GPIO.OUT)
+        GPIO.setup(fanPin, GPIO.OUT)
+        GPIO.setup(heaterPin, GPIO.OUT)
 
         # Start temperatureTimer
         self.temperatureTimer = octoprint.util.RepeatedTimer(10.0, self.get_temperature, run_first=True)
@@ -150,13 +149,15 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             "setMin" : int(self._settings.get(["temperatureMin"])),
             "setMax" : int(self._settings.get(["temperatureMax"]))
         }
+        self.fanPin = int(self._settings.get(["fanGPIOPin"]))
+        self.heaterPin = int(self._settings.get(["heaterGPIOPin"]))
 
     ##~~ UI setup
     def get_template_vars(self):
         return dict(
             hardwareAddress=self._settings.get(["hardwareAddress"]),
-            heaterGPIOPin=self._settings.get(["heaterGPIOPin"]),
-            fanGPIOPin=self._settings.get(["fanGPIOPin"]),
+            heaterGPIOPin=self.fanPin,
+            fanGPIOPin=self.heaterPin,
             temperatureMin=self.temperatures["setMin"],
             temperatureMax=self.temperatures["setMax"]
             )
@@ -230,7 +231,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
                     self.temperatures["setMin"] < self.temperatures["current"] < self.temperatures["setMax"]
                 ) and 
                 (
-                    GPIO.input(self._settings.get(["heaterGPIOPin"])) or GPIO.input(self._settings.get(["fanGPIOPin"]))
+                    GPIO.input(self.heaterPin) or GPIO.input(self.fanPin)
                 )
             ):
             self._logger.info("Turning heater/fan Off")
@@ -241,8 +242,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
     def update_relays(self):
         self._logger.info("Updating Relays")
-        GPIO.output(self._settings.get(["heaterGPIOPin"]), self.heaterState)
-        GPIO.output(self._settings.get(["fanGPIOPin"]), self.fanState)
+        GPIO.output(self.heaterPin, self.heaterState)
+        GPIO.output(self.fanPin, self.fanState)
         self.update_UI()
 
     def update_UI(self):
