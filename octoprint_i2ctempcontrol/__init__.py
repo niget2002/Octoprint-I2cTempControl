@@ -130,8 +130,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 
         # Setup GPIO
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(self._settings.get(["fanGPIOPin"]), GPIO.OUT)
-        GPIO.setup(self._settings.get(["heaterGPIOPin"]), GPIO.OUT)
+        GPIO.setup(int(self._settings.get(["fanGPIOPin"])), GPIO.OUT)
+        GPIO.setup(int(self._settings.get(["heaterGPIOPin"])), GPIO.OUT)
 
         # Start temperatureTimer
         self.temperatureTimer = octoprint.util.RepeatedTimer(10.0, self.get_temperature, run_first=True)
