@@ -27,4 +27,26 @@ Once configured, you can go to the I2C Temperature Controller tab in octoprint. 
 
 The logic is silly simple. If the temperature is below the Min value, it turns the heater pin on. If it goes above the Max value, it turns the exhaust fan on. Any temperature in betwen Min and Max, it does nothing.
 
+The plugin does add the chamber temperature and current target value to the temperature graph. The target value will change from either showing Min or Max depending on if the controller is trying to heat or cool the chamber.
+
 There is some logic for the end of a print to turn the exhaust fan on. This is to help cool the chamber back down after a print. I don't have a way of disabling this feature. I should probably add that.
+
+## Hardware Used
+
+I used the following hardware in my build:
+
+* [Temp sensor](https://a.co/d/8xrasrw)
+* [Chamber Heater](https://a.co/d/aMrDE8q)
+* [Exhast/heater fan](https://a.co/d/86eDWm1)
+* [Relay](https://a.co/d/hu0r7RQ)
+* [Irf520 board](https://a.co/d/cWC2N0w)
+
+The GPIO pins from the Raspberry Pi go to the Irf520 board. The Exhaust fan is driven directly off of the Irf520. The heater Irf520 is used to drive both the heater fan, and the relay that is controlling the heater. I used 24v fans because I'm running 24v to my SKR Pro controller.
+
+I mounted my heater so that the fan blows across the heater and pulls air from outside. If the thermal fuse gets too hot on the heater, it will shut the heater off. Having cool air blowing onto the thermal fuse helps keep it from tripping.
+
+I have an 80mm filter on the heater fan to keep dust from being blowin into the chamber.
+
+The heater fan produces enough wind to push air past the heater core, but not so much that it produces any turbulance inside the chamber.
+
+I mounted the heater in the bottom of the chamber and the exhaust fan in the lid pulling air out the top. The temperature sensor is mounted near the middle of the lid of my printer.
