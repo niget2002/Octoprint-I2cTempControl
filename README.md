@@ -50,3 +50,9 @@ I have an 80mm filter on the heater fan to keep dust from being blowin into the 
 The heater fan produces enough wind to push air past the heater core, but not so much that it produces any turbulance inside the chamber.
 
 I mounted the heater in the bottom of the chamber and the exhaust fan in the lid pulling air out the top. The temperature sensor is mounted near the middle of the lid of my printer.
+
+## Future Plans
+
+* Have ability to turn the chamber controller on automatically when print starts. Have it pause print while pre-heating chamber
+* Have heater fan controlled separately from heater core. This would allow the fan to be ran a bit longer after the core is turned off. Would also allow the heater fan to be used at end of print to help cool chamber down faster.
+* Ability to disable chamber cooling at end of print.
