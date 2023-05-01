@@ -14,3 +14,9 @@ or manually using this URL:
 ## Configuration
 
 The code is set up to use the BOARD pin number for the GPIOPins. It is also setup to use channel 1 on the SMBUS for the I2C. You'll need to login to the Pi through SSH and use i2cdetect to get the hardware address of your LM75.
+
+## Usage
+
+Once configured, you can go to the I2C Temperature Controller tab in octoprint. You will see 2 buttons. One will start the chamber controller, the other will stop it. There is currently a bug that the controller shows 'off' even though it's running. You'll see it flicker 'on' then 'off' when the temperature is updated.
+
+![Chamber Controller](https://github.com/niget2002/Octoprint-I2cTempControl/images/ChamberController.png)
