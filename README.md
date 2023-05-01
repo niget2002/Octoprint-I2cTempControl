@@ -15,8 +15,16 @@ or manually using this URL:
 
 The code is set up to use the BOARD pin number for the GPIOPins. It is also setup to use channel 1 on the SMBUS for the I2C. You'll need to login to the Pi through SSH and use i2cdetect to get the hardware address of your LM75.
 
+![Chamber Config](https://github.com/niget2002/Octoprint-I2cTempControl/blob/master/images/ChamberConfig.png)
+
 ## Usage
 
 Once configured, you can go to the I2C Temperature Controller tab in octoprint. You will see 2 buttons. One will start the chamber controller, the other will stop it. There is currently a bug that the controller shows 'off' even though it's running. You'll see it flicker 'on' then 'off' when the temperature is updated.
 
 ![Chamber Controller](https://github.com/niget2002/Octoprint-I2cTempControl/blob/master/images/ChamberController.png)
+
+## How it works
+
+The logic is silly simple. If the temperature is below the Min value, it turns the heater pin on. If it goes above the Max value, it turns the exhaust fan on. Any temperature in betwen Min and Max, it does nothing.
+
+There is some logic for the end of a print to turn the exhaust fan on. This is to help cool the chamber back down after a print. I don't have a way of disabling this feature. I should probably add that.
