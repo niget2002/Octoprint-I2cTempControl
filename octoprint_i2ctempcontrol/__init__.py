@@ -263,7 +263,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
             self.controlRunning = 0
             self.fanState = 1
             self.update_relays()
-            self.shutdownTimer = octoprint.util.RepeatedTimer(600.0, self.jobIsDone())
+            self.shutdownTimer = octoprint.util.RepeatedTimer(600.0, self.jobIsDone, run_first=False)
             self.shutdownTimer.start()
     
     def jobIsDone(self):
