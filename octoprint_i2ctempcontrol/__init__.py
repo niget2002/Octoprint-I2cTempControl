@@ -202,7 +202,8 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
         self.temperatures["current"] = self.sensor.getCelsius()
         if self.controlRunning:
             self.control_relays()
-        self.update_UI()
+        else:
+            self.update_UI()
         self.last_temp["Chamber"] = (self.temperatures["current"], self.setTemp)
         self._logger.info("I2c Temperature: %s, Fan State: %s, Heater State: %s" % 
                           (self.temperatures["current"], 
@@ -302,7 +303,7 @@ class I2ctempcontrolPlugin(octoprint.plugin.SettingsPlugin,
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
 # can be overwritten via __plugin_xyz__ control properties. See the documentation for that.
-__plugin_name__ = "I2C Temperature Controller"
+__plugin_name__ = "I2C Temp Control"
 
 
 # Set the Python version your plugin is compatible with below. Recommended is Python 3 only for all new plugins.

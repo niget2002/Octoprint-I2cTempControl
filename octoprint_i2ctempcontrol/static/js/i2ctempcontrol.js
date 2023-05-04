@@ -10,9 +10,9 @@ $(function() {
 
         self.settings = parameters[0];
         self.temperatureValue = ko.observable();
-        self.fanState = ko.observable("Off");
-        self.heaterState = ko.observable("Off");
-        self.controlState = ko.observable("Off");
+        self.fanState = ko.observable();
+        self.heaterState = ko.observable();
+        self.controlState = ko.observable();
         self.setTempMin = ko.observable(0);
         self.setTempMax = ko.observable(0);
 
