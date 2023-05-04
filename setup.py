@@ -24,7 +24,7 @@ plugin_description = """Uses a LM75 and GPIO to control the temperature of the c
 plugin_author = "David Walling"
 
 # The plugin's author's mail address.
-plugin_author_email = "david@wallings.net"
+plugin_author_email = "niget2002+octoplugin@gmail.com"
 
 # The plugin's homepage URL. Can be overwritten within OctoPrint's internal data via __plugin_url__ in the plugin module
 plugin_url = "https://github.com/niget2002/OctoPrint-I2ctempcontrol"
