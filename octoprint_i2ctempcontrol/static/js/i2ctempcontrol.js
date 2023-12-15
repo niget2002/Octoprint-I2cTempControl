@@ -32,19 +32,19 @@ $(function() {
             if (data.controlState == 1) { 
                 self.controlText("<span style='color:green;'>On</span>");
             }
-            else {
+            if  (data.controlState == 0){
                 self.controlText("<span style='color:red;'>Off</span>")
             }       
             if (data.fanState == 1) {
                 self.fanText("<span style='color:green;'>On</span>")
             }
-            else {
+            if (data.fanState == 0) {
                 self.fanText("<span style='color:red;'>Off</span>")
             }        
             if (data.heaterState == 1) {
                 self.heaterText("<span style='color:green;'>On</span>")
             }
-            else {
+            if (data.heaterState == 0) {
                 self.heaterText("<span style='color:red;'>Off</span>")
             }     
         }
