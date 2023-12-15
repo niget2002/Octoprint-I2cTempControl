@@ -13,6 +13,9 @@ $(function() {
         self.fanState = ko.observable();
         self.heaterState = ko.observable();
         self.controlState = ko.observable();
+        self.fanText = ko.observable();
+        self.heaterText = ko.observable();
+        self.controlText = ko.observable();
         self.setTempMin = ko.observable(0);
         self.setTempMax = ko.observable(0);
 
@@ -27,22 +30,22 @@ $(function() {
                 self.setTempMax(data.setTempMax)
             }
             if (data.controlState == 1) { 
-                self.controlState("<span style='color:green;'>On</span>");
+                self.controlText("<span style='color:green;'>On</span>");
             }
             else {
-                self.controlState("<span style='color:red;'>Off</span>")
+                self.controlText("<span style='color:red;'>Off</span>")
             }       
             if (data.fanState == 1) {
-                self.fanState("<span style='color:green;'>On</span>")
+                self.fanText("<span style='color:green;'>On</span>")
             }
             else {
-                self.fanState("<span style='color:red;'>Off</span>")
+                self.fanText("<span style='color:red;'>Off</span>")
             }        
             if (data.heaterState == 1) {
-                self.heaterState("<span style='color:green;'>On</span>")
+                self.heaterText("<span style='color:green;'>On</span>")
             }
             else {
-                self.heaterState("<span style='color:red;'>Off</span>")
+                self.heaterText("<span style='color:red;'>Off</span>")
             }     
         }
 
