@@ -19,7 +19,7 @@ The code is set up to use the BOARD pin number for the GPIOPins. It is also setu
 
 ## Usage
 
-Once configured, you can go to the I2C Temperature Controller tab in octoprint. You will see 2 buttons. One will start the chamber controller, the other will stop it. There is currently a bug that the controller shows 'off' even though it's running. You'll see it flicker 'on' then 'off' when the temperature is updated.
+Once configured, you can go to the I2C Temperature Controller tab in octoprint. You will see 2 buttons. One will start the chamber controller, the other will stop it. The display will show which outputs are currently On and Off.
 
 ![Chamber Controller](https://github.com/niget2002/Octoprint-I2cTempControl/blob/master/images/ChamberController.png)
 
